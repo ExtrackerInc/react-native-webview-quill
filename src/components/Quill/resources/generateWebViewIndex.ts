@@ -11,10 +11,24 @@ import { IResources } from '../interfaces/IResources';
 
 export function generateWebViewIndex(
   resources: IResources,
-  content: DeltaStatic | undefined,
+  content: DeltaStatic | string | undefined,
   options: QuillOptionsStatic
 ) {
-  return encodeURIComponent(/*html*/ `
+
+  // TODO: Steal `isDelta` from https://github.com/zenoamaro/react-quill/blob/916a18e88cbe2111e19a02c27f20717b2c36dfbd/src/component.js
+  const isHTML = (typeof content === 'string')
+  const [initialContent, changeContent] = (isHTML) ?
+    [
+      `editor.setContents(editor.clipboard.convert('${content}'));`,
+      `editor.root.innerHTML`
+    ]
+    :
+    [
+      `editor.setContents(${JSON.stringify(content)});`,
+      `editor.getContents()`
+    ]
+
+  return `
     <!DOCTYPE html>
     <html>
       <head>
@@ -136,11 +150,11 @@ export function generateWebViewIndex(
           const editor = new Quill('.quill-editor', ${JSON.stringify(options)});
 
           /* Set the initial content */
-          editor.setContents(${JSON.stringify(content)})
+          ${initialContent}
 
           /* Send a message when the text changes */
           editor.on('text-change', function() {
-            sendMessage(${EventType.CONTENT_CHANGE}, editor.getContents());
+            sendMessage(${EventType.CONTENT_CHANGE}, ${changeContent});
           });
 
           editor.root.addEventListener('focus', () => onFocus(editor));
@@ -150,5 +164,5 @@ export function generateWebViewIndex(
         </script>
       </body>
     </html>
-  `);
+  `;
 }

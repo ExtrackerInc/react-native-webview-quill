@@ -11,7 +11,7 @@ import { generateWebViewIndex } from './resources/generateWebViewIndex';
 interface IProps {
   accessibilityLabel?: string;
   containerStyle?: ViewStyle;
-  content?: DeltaStatic;
+  content?: DeltaStatic | string;
   onContentChange?: (content: DeltaStatic) => any;
   options?: QuillOptionsStatic;
 }
