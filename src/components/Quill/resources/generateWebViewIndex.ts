@@ -48,7 +48,10 @@ export function generateWebViewIndex(
           }
 
           .quill-editor {
-            flex: 1 1 auto;
+            /* Default... */
+            /* flex: 1 1 auto; */
+            /* This makes the tap area the full height */
+            flex: 1;
           }
 
           .quill-wrapper .ql-container {
